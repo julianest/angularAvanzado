@@ -1,12 +1,10 @@
 import {
   Component,
-  Input,
-  SimpleChanges,
+  input,
   signal,
-  OnChanges,
-  OnInit,
   AfterViewInit,
   OnDestroy,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -16,11 +14,11 @@ import { CommonModule } from '@angular/common';
   templateUrl: './counter.component.html',
 })
 export class CounterComponent
-  implements OnChanges, OnInit, AfterViewInit, OnDestroy
+  implements AfterViewInit, OnDestroy
 {
-  @Input({ required: true }) duration = 0;
-  @Input({ required: true }) message = '';
-  counter = signal(0);
+  $duration = input.required<number>();
+  $message = input.required<string>();
+  $counter = signal(0);
   counterRef: number | undefined;
 
   constructor() {
@@ -29,9 +27,17 @@ export class CounterComponent
     // una vez
     console.log('constructor');
     console.log('-'.repeat(10));
+    effect(() => {
+      this.$duration();
+      this.doSomething();
+    });
+    effect(() => {
+      this.$message();
+      this.doSomething2();
+    });
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+/*  ngOnChanges(changes: SimpleChanges) {
     // before and during render
     console.log('ngOnChanges');
     console.log('-'.repeat(10));
@@ -41,20 +47,20 @@ export class CounterComponent
       this.doSomething();
     }
   }
-
+*//*
   ngOnInit() {
     // after render
     // una vez
     // async, then, subs
     console.log('ngOnInit');
     console.log('-'.repeat(10));
-    console.log('duration =>', this.duration);
-    console.log('message =>', this.message);
+    console.log('duration =>', this.duration());
+    console.log('message =>', this.message());
     this.counterRef = window.setInterval(() => {
       console.log('run interval');
       this.counter.update((statePrev) => statePrev + 1);
     }, 1000);
-  }
+  }*/
 
   ngAfterViewInit() {
     // after render
@@ -72,5 +78,8 @@ export class CounterComponent
   doSomething() {
     console.log('change duration');
     // async
+  }
+  doSomething2() {
+    console.log('change mesage');
   }
 }
